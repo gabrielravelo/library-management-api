@@ -4,11 +4,13 @@ import { SeedController } from './seed.controller';
 import { UsersModule } from 'src/users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { AuthorsModule } from 'src/authors/authors.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([User]),
-        UsersModule
+        AuthorsModule,
+        UsersModule,
     ],
     controllers: [SeedController],
     providers: [SeedService],

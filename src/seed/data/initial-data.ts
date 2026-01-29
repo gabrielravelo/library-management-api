@@ -21,4 +21,8 @@ export const INITIAL_DATA = {
             role: Role.USER,
         },
     ],
+    authors: [
+        { firstName: 'Gabriel', lastName: 'García Márquez' },
+        { firstName: 'Isabel', lastName: 'Allende' },
+    ],
 };

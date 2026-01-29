@@ -8,6 +8,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { SeedModule } from './seed/seed.module';
+import { AuthorsModule } from './authors/authors.module';
+import { BooksModule } from './books/books.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
     imports: [
@@ -16,6 +20,7 @@ import { SeedModule } from './seed/seed.module';
             load: [configuration],
             validationSchema: envSchema,
         }),
+        EventEmitterModule.forRoot(),
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
             inject: [ConfigService],
@@ -31,8 +36,11 @@ import { SeedModule } from './seed/seed.module';
             }),          
         }),
         AuthModule,
-        UsersModule,
+        AuthorsModule,
+        BooksModule,
+        ReportsModule,
         SeedModule,
+        UsersModule,
     ],
     controllers: [AppController],
     providers: [AppService],
