@@ -5,6 +5,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration';
 import { envSchema } from './config/joi.validation';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
     imports: [
@@ -26,7 +29,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
                 autoLoadEntities: true,
                 synchronize: configService.get<string>('ENV') === 'dev',
             }),          
-        })
+        }),
+        AuthModule,
+        UsersModule,
+        SeedModule,
     ],
     controllers: [AppController],
     providers: [AppService],
