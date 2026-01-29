@@ -1,98 +1,202 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 📚 Library Management API — NestJS, PostgreSQL, JWT
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST robusta construida con **NestJS** + **TypeORM** + **PostgreSQL** para la gestión de inventario bibliotecario:
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+- Autenticación **JWT** (Passport Strategy)
+- **RBAC** (Role-Based Access Control) con roles jerárquicos
+- **Asynchronous Jobs** vía EventEmitter2 para actualización de contadores
+- **Excel Reporting** con exceljs para exportación de inventario
+- **Seeding System** integrado para carga inicial de datos
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🚀 Características
 
-## Project setup
+- ✅ CRUD de **Usuarios**, **Autores** y **Libros**
+- 🔐 **JWT Auth** + **RolesGuard** (ADMIN, LIBRARIAN, USER)
+- 🧠 **Async Logic:** el `booksCount` de los autores se actualiza en background al crear/eliminar libros
+- 📂 **Exportación:** descarga de catálogo completo en formato `.xlsx`
+- 🧪 **Database Seeder:** endpoint centralizado para reset y carga de datos de prueba
+- 🧩 **Validación Global:** uso de `ValidationPipe` para sanitización de DTOs y `ParseUUIDPipe` para IDs de usuario
 
-```bash
-$ yarn install
+---
+
+## 📁 Estructura del proyecto
+
+```text
+src/
+├─ auth/                       # Lógica de autenticación y seguridad
+│  ├─ decorators/              # @Roles, @Public, etc.
+│  ├─ dto/                     # LoginDto, RegisterDto
+│  ├─ enums/                   # Role enum (ADMIN, LIBRARIAN, USER)
+│  ├─ guards/                  # JwtAuthGuard, RolesGuard
+│  ├─ auth.controller.ts
+│  ├─ auth.module.ts
+│  └─ auth.service.ts
+├─ users/                      # Gestión de perfiles de usuario
+│  ├─ entities/                # User entity (Bcrypt hashing @BeforeInsert)
+│  ├─ users.controller.ts
+│  ├─ users.module.ts
+│  └─ users.service.ts
+├─ authors/                    # Módulo de Autores (Contador asíncrono)
+│  ├─ entities/                # Author entity (id, name, booksCount)
+│  ├─ authors.controller.ts
+│  └─ authors.service.ts       # Listener de eventos: 'book.count.update'
+├─ books/                      # Módulo de Libros
+│  ├─ entities/                # Book entity (Relación ManyToOne con Author)
+│  ├─ books.controller.ts
+│  └─ books.service.ts         # Emisor de eventos al crear/eliminar
+├─ reports/                    # Generación de reportes
+│  ├─ reports.controller.ts
+│  └─ reports.service.ts       # Lógica de ExcelJS
+├─ seed/                       # Datos iniciales y reset de DB
+│  ├─ data/                    # Archivos de datos JSON/Arrays
+│  ├─ seed.controller.ts
+│  └─ seed.service.ts
+├─ app.module.ts
+└─ main.ts
 ```
 
-## Compile and run the project
+---
+
+## 🧩 Configuración (.env)
+
+Ejemplo para entorno local:
 
 ```bash
-# development
-$ yarn run start
+# App Configuration
+PORT=3000
+NODE_ENV=dev
 
-# watch mode
-$ yarn run start:dev
+# Database Configuration (PostgreSQL)
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASS=123456
+DB_NAME=library_db
 
-# production mode
-$ yarn run start:prod
+# Security
+JWT_KEY=super_secret_key_123
+JWT_EXPIRES_IN=2h
 ```
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ yarn run test
+## 🧱 Seguridad / Roles
 
-# e2e tests
-$ yarn run test:e2e
+**Jerarquía y Permisos:**
 
-# test coverage
-$ yarn run test:cov
-```
+1. `ADMIN` → Acceso total, gestión de usuarios, creación de bibliotecarios y reset de DB.
 
-## Deployment
+2. `LIBRARIAN` → Gestión de Autores y Libros (CRUD). No puede gestionar usuarios.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+3. `USER` → Acceso de lectura (Read-only) a los catálogos de autores y libros.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+> **Validation:** Se utiliza class-validator para asegurar que los ISBN sean válidos, las fechas tengan formato ISO y los campos obligatorios estén presentes.
 
-```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
-```
+---
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## ⚡ Job Asíncrono (Event Driven)
 
-## Resources
+Se implementó un desacoplamiento mediante EventEmitter2:
 
-Check out a few resources that may come in handy when working with NestJS:
+- Al ejecutar `POST /books`, el servicio guarda el registro y emite un evento `book.count.update`.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- El `AuthorsService` escucha el evento y recalcula el `booksCount` del autor afectado.
 
-## Support
+- **Ventaja:** La respuesta al cliente es inmediata; el cálculo pesado se realiza fuera del ciclo principal de la petición.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+---
 
-## Stay in touch
+## 🔐 Autenticación
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+> **Nota:** Todos los endpoints de la API están bajo el prefijo global `/api/v1`.
 
-## License
+### Endpoints Auth
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+| Método | Ruta           | Descripción                             |
+| -----: | :------------- | :-------------------------------------- |
+|   POST | /auth/register | Registro público (rol USER por defecto) |
+|   POST | /auth/login    | Login (Devuelve JWT + Datos de usuario) |
+
+---
+
+## 📊 Endpoints Principales
+
+### 👤 Usuarios (Solo ADMIN)
+
+| Método | Ruta         | Descripción                              |
+| -----: | :----------- | :--------------------------------------- |
+|    GET | /users       | Listar todos los usuarios                |
+|    GET | /users/:uuid | Obtener usuario por UUID (ParseUUIDPipe) |
+
+### ✍️ Autores
+
+| Método | Ruta         | Roles Permitidos     | Descripción             |
+| -----: | :----------- | :------------------- | :---------------------- |
+|    GET | /authors     | Todos (Autenticados) | Listado con booksCount  |
+|   POST | /authors     | ADMIN, LIBRARIAN     | Crear nuevo autor       |
+|  PATCH | /authors/:id | ADMIN, LIBRARIAN     | Actualizar datos autor  |
+| DELETE | /authors/:id | ADMIN                | Eliminar autor y libros |
+
+### 📖 Libros
+
+| Método | Ruta       | Roles Permitidos     | Descripción              |
+| -----: | :--------- | :------------------- | :----------------------- |
+|    GET | /books     | Todos (Autenticados) | Listado con relación     |
+|   POST | /books     | ADMIN, LIBRARIAN     | Crear y emitir evento    |
+|  PATCH | /books/:id | ADMIN, LIBRARIAN     | Actualizar libro         |
+| DELETE | /books/:id | ADMIN, LIBRARIAN     | Eliminar y emitir evento |
+
+### 📉 Reportes
+
+| Método | Ruta                   | Descripción                           |
+| -----: | :--------------------- | :------------------------------------ |
+|    GET | /reports/books/excel   | Descarga archivo .xlsx (Requiere JWT) |
+|    GET | /reports/authors/excel | Descarga archivo .xlsx (Requiere JWT) |
+
+### ⚙️ Sistema
+
+| Método | Ruta  | Descripción                               |
+| -----: | :---- | :---------------------------------------- |
+|    GET | /seed | Limpia DB y carga datos iniciales (Admin) |
+
+---
+
+## ▶️ Arranque rápido
+
+Sigue estos pasos para poner en marcha el proyecto:
+
+1. **Clonar el repositorio:**
+    ```bash
+    git clone https://github.com/gabrielravelo/library-management-api
+    ```
+2. **Acceder al directorio:**
+    ```bash
+    cd library-management-api
+    ```
+3. **Instalar dependencias:**
+    - **Nota:** Es necesario tener Yarn instalado (`npm install --global yarn`). 
+    ```bash
+    yarn install
+    ```
+4. **Configurar variables de entorno::**
+    - Copia el archivo de plantilla:
+    ```bash
+    cp .env.template .env
+5. **Levantar la Base de Datos:**
+    - **Opción A (Recomendada):** Usar Docker Compose para levantar PostgreSQL automáticamente:
+    ```bash
+    docker compose up -d
+    ```
+    - **Opción B (Manual):** Asegúrate de tener una instancia de PostgreSQL corriendo y que los datos coincidan con tu archivo `.env`
+6. **Ejecutar en modo desarrollo:**
+    ```bash
+    yarn start:dev
+    ```
+Una vez levantado, puedes inicializar los datos de prueba accediendo a GET /api/v1/seed desde tu navegador o cliente REST.
+
+### 💡 Recordatorio técnico:
+No olvides que para que el prefijo funcione, en tu archivo `main.ts` debe estar configurado así:
+```typescript
+app.setGlobalPrefix('api/v1');
