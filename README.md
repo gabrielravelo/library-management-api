@@ -70,13 +70,13 @@ Ejemplo para entorno local:
 ```bash
 # App Configuration
 PORT=3000
-NODE_ENV=dev
+ENV=dev
 
 # Database Configuration (PostgreSQL)
-DB_HOST=localhost
+DB_HOST=db # Nombre del servicio de db del docker (si aplica)
 DB_PORT=5432
 DB_USER=postgres
-DB_PASS=123456
+DB_PASSWORD=123456
 DB_NAME=library_db
 
 # Security
