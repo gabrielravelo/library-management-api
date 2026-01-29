@@ -7,7 +7,8 @@ API REST robusta construida con **NestJS** + **TypeORM** + **PostgreSQL** para l
 - **Asynchronous Jobs** vía EventEmitter2 para actualización de contadores
 - **Excel Reporting** con exceljs para exportación de inventario
 - **Seeding System** integrado para carga inicial de datos
-
+- **Documentación:** Swagger UI interactivo
+- **Dockerizado:** Entorno completo con Docker y Docker Compose
 ---
 
 ## 🚀 Características
@@ -18,6 +19,7 @@ API REST robusta construida con **NestJS** + **TypeORM** + **PostgreSQL** para l
 - 📂 **Exportación:** descarga de catálogo completo en formato `.xlsx`
 - 🧪 **Database Seeder:** endpoint centralizado para reset y carga de datos de prueba
 - 🧩 **Validación Global:** uso de `ValidationPipe` para sanitización de DTOs y `ParseUUIDPipe` para IDs de usuario
+- 📘 **Swagger Docs:** Documentación viva en `/api/v1/docs`
 
 ---
 
@@ -55,6 +57,8 @@ src/
 │  └─ seed.service.ts
 ├─ app.module.ts
 └─ main.ts
+Dockerfile                     # Imagen para producción
+docker-compose.yml             # Orquestación de App + DB
 ```
 
 ---
@@ -163,37 +167,26 @@ Se implementó un desacoplamiento mediante EventEmitter2:
 
 ---
 
-## ▶️ Arranque rápido
+## ▶️ Pasos para levantar el proyecto
 
 Sigue estos pasos para poner en marcha el proyecto:
 
-1. **Clonar el repositorio:**
+1. **Clonar el repositorio y acceder:**
     ```bash
     git clone https://github.com/gabrielravelo/library-management-api
-    ```
-2. **Acceder al directorio:**
-    ```bash
     cd library-management-api
     ```
-3. **Instalar dependencias:**
-    - **Nota:** Es necesario tener Yarn instalado (`npm install --global yarn`). 
+2. **Configurar el entorno:**
+    - Crear archivo `.env` basado en la sección anterior.
+3. **Levantar con Docker (Recomendado):**
+    - **Nota:** Este comando levanta la base de datos y la API con Hot-Reload activo. 
     ```bash
-    yarn install
+    docker compose up --build -d
     ```
-4. **Configurar variables de entorno::**
-    - Copia el archivo de plantilla:
-    ```bash
-    cp .env.template .env
-5. **Levantar la Base de Datos:**
-    - **Opción A (Recomendada):** Usar Docker Compose para levantar PostgreSQL automáticamente:
-    ```bash
-    docker compose up -d
-    ```
-    - **Opción B (Manual):** Asegúrate de tener una instancia de PostgreSQL corriendo y que los datos coincidan con tu archivo `.env`
-6. **Ejecutar en modo desarrollo:**
-    ```bash
-    yarn start:dev
-    ```
+4. **Instalación Manual (Opcional):**
+    - Requiere Yarn instalado.
+    - Levantar solo DB: `docker compose up db -d`
+    - Ejecutar App: `yarn install` y luego `yarn start:dev`
 Una vez levantado, puedes inicializar los datos de prueba accediendo a GET /api/v1/seed desde tu navegador o cliente REST.
 
 ### 💡 Recordatorio técnico:
